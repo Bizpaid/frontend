@@ -18,7 +18,7 @@ export default function OrderSummary() {
         <div className="mt-10 lg:mt-0">
             <h2 className="text-lg font-medium text-gray-900">Order summary</h2>
 
-            <div className="mt-4 rounded-lg border border-gray-200 bg-white shadow-sm">
+            <div className="mt-4 rounded-lg border border-gray-200 flex flex-col justify-evenly bg-white shadow-sm min-h-[calc(100%-44px)]">
                 <h3 className="sr-only">Items in your cart</h3>
                 <ul role="list" className="divide-y divide-gray-200">
                     {products.map((product) => (
