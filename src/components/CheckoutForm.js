@@ -1,25 +1,35 @@
 "use client";
 
 import { useState } from "react";
+import {
+    Menu,
+    MenuButton,
+    MenuItem,
+    MenuItems,
+    Transition,
+} from "@headlessui/react";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import cn from "classnames";
 
 import { PhoneNumber } from "@/common";
 import { OrderSummary } from "@/components";
 
 const bankTransfers = [
-    { id: "bri", title: "Bank transfer BRI", image: "/bri.svg" },
-    { id: "bni", title: "Bank transfer BNI", image: "/bni.svg" },
-    { id: "mandiri", title: "Bank transfer Mandiri", image: "/mandiri.svg" },
-    { id: "bsi", title: "Bank transfer BSI", image: "/bsi.svg" },
-    { id: "permata", title: "Bank transfer Permata", image: "/permata.svg" },
-    { id: "bnc", title: "Bank transfer BNC", image: "/bnc.png" },
-    { id: "bss", title: "Bank transfer BSS", image: "/bss.png" },
-    { id: "bca", title: "Bank transfer BCA", image: "/bca.svg" },
-    { id: "bjb", title: "Bank transfer BJB", image: "/bjb.svg" },
-    { id: "cimb", title: "Bank transfer CIMB", image: "/cimb.svg" },
+    { id: "bca", name: "Bank transfer BCA", image: "/bca.svg" },
+    { id: "mandiri", name: "Bank transfer Mandiri", image: "/mandiri.svg" },
+    { id: "bni", name: "Bank transfer BNI", image: "/bni.svg" },
+    { id: "bri", name: "Bank transfer BRI", image: "/bri.svg" },
+    { id: "bsi", name: "Bank transfer BSI", image: "/bsi.svg" },
+    { id: "permata", name: "Bank transfer Permata", image: "/permata.svg" },
+    { id: "bnc", name: "Bank transfer BNC", image: "/bnc.png" },
+    { id: "bss", name: "Bank transfer BSS", image: "/bss.png" },
+    { id: "bjb", name: "Bank transfer BJB", image: "/bjb.svg" },
+    { id: "cimb", name: "Bank transfer CIMB", image: "/cimb.svg" },
 ];
 
 export default function CheckoutForm() {
+    const [selectedBank, setSelectedBank] = useState(bankTransfers[0]);
+
     return (
         <form className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
             <div>
@@ -94,51 +104,90 @@ export default function CheckoutForm() {
 
                     <fieldset className="mt-4">
                         <legend className="sr-only">Bank options</legend>
-                        <div className="space-y-4 flex flex-col">
-                            {bankTransfers.map((bank, bankIdx) => (
-                                <div
-                                    key={bank.id}
-                                    className="flex items-center"
-                                >
-                                    {bankIdx === 0 ? (
-                                        <input
-                                            id={bank.id}
-                                            name="payment-type"
-                                            type="radio"
-                                            defaultChecked
-                                            className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                        />
-                                    ) : (
-                                        <input
-                                            id={bank.id}
-                                            name="payment-type"
-                                            type="radio"
-                                            className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                        />
-                                    )}
-
-                                    <label
-                                        htmlFor={bank.id}
-                                        className="ml-3 text-sm font-medium text-gray-700 flex items-center"
-                                    >
-                                        {bank.title}
+                        <Menu
+                            as="div"
+                            className="relative inline-block text-left w-full mb-4"
+                        >
+                            <div>
+                                <MenuButton className="inline-flex w-full justify-between gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-medium text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                                    <div className="flex items-center">
+                                        {selectedBank.name}
                                         <img
-                                            src={bank.image}
-                                            alt={bank.title}
+                                            src={selectedBank.image}
+                                            alt={selectedBank.title}
                                             className={cn(
                                                 "ml-1 h-[24px] rounded-md",
                                                 {
                                                     "w-[38px]":
-                                                        bank.id !== "bss",
+                                                        selectedBank.id !==
+                                                        "bss",
                                                     "w-[74px]":
-                                                        bank.id === "bss",
+                                                        selectedBank.id ===
+                                                        "bss",
                                                 }
                                             )}
                                         />
-                                    </label>
-                                </div>
-                            ))}
-                        </div>
+                                    </div>
+                                    <ChevronDownIcon
+                                        className="-mr-1 h-5 w-5 text-gray-400"
+                                        aria-hidden="true"
+                                    />
+                                </MenuButton>
+                            </div>
+
+                            <Transition
+                                enter="transition ease-out duration-100"
+                                enterFrom="transform opacity-0 scale-95"
+                                enterTo="transform opacity-100 scale-100"
+                                leave="transition ease-in duration-75"
+                                leaveFrom="transform opacity-100 scale-100"
+                                leaveTo="transform opacity-0 scale-95"
+                            >
+                                <MenuItems className="absolute left-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                    <div className="py-1">
+                                        {bankTransfers.map((bank) => (
+                                            <MenuItem
+                                                key={bank.id}
+                                                onClick={() =>
+                                                    setSelectedBank(bank)
+                                                }
+                                            >
+                                                {({ focus }) => (
+                                                    <div
+                                                        className={cn(
+                                                            "flex items-center px-4 py-2 text-sm",
+                                                            {
+                                                                "bg-gray-100 text-gray-900":
+                                                                    focus,
+                                                                "text-gray-700":
+                                                                    !focus,
+                                                            }
+                                                        )}
+                                                    >
+                                                        {bank.name}
+                                                        <img
+                                                            src={bank.image}
+                                                            alt={bank.title}
+                                                            className={cn(
+                                                                "ml-1 h-[24px] rounded-md",
+                                                                {
+                                                                    "w-[38px]":
+                                                                        bank.id !==
+                                                                        "bss",
+                                                                    "w-[74px]":
+                                                                        bank.id ===
+                                                                        "bss",
+                                                                }
+                                                            )}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </MenuItem>
+                                        ))}
+                                    </div>
+                                </MenuItems>
+                            </Transition>
+                        </Menu>
                     </fieldset>
                 </div>
             </div>
