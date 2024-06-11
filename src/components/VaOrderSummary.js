@@ -77,7 +77,7 @@ export default function VaOrderSummary() {
                                     </td>
                                 </tr>
                                 <tr className="hidden lg:table-row">
-                                    <td colspan="2" className="py-3">
+                                    <td colSpan="2" className="py-3">
                                         <hr className="border-gray-500 opacity-20" />
                                     </td>
                                 </tr>
@@ -85,7 +85,7 @@ export default function VaOrderSummary() {
                                     <td
                                         className="py-3"
                                         valign="middle"
-                                        colspan="2"
+                                        colSpan="2"
                                     >
                                         <div className="flex items-center justify-between">
                                             <div className="font-semibold hidden lg:block">
