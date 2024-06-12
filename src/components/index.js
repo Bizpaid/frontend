@@ -1,2 +1,9 @@
 export { default as CheckoutForm } from "@/components/CheckoutForm";
 export { default as OrderSummary } from "@/components/OrderSummary";
+export { default as VaDetail } from "@/components/VaDetail";
+export { default as MobileVaOrderSummary } from "@/components/MobileVaOrderSummary";
+export { default as VaOrderSummary } from "@/components/VaOrderSummary";
+export { default as VaBankInstruction } from "@/components/VaBankInstruction";
+export { default as AtmInstruction } from "@/components/AtmInstruction";
+export { default as IbankInstruction } from "@/components/IbankInstruction";
+export { default as MbankInstruction } from "@/components/MBankInstruction";
