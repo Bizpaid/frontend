@@ -3,11 +3,7 @@
 import { DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 
-import {
-    MobileVaOrderSummary,
-    MobileVaBack,
-    VaBankInstruction,
-} from "@/components";
+import { MobileVaOrderSummary, VaBankInstruction } from "@/components";
 
 export default function VaDetail() {
     function handleCopyVaNumber() {
@@ -102,8 +98,6 @@ export default function VaDetail() {
                                     caused by this transaction.
                                 </p>
                             </div>
-
-                            <MobileVaBack />
 
                             <VaBankInstruction />
                         </section>
