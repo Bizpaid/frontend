@@ -9,10 +9,12 @@ import {
     Transition,
 } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import { toast } from "react-toastify";
 import cn from "classnames";
 
 import { PhoneNumber } from "@/common";
 import { OrderSummary } from "@/components";
+import { INTERNAL_SERVER_ERROR, X_API_HEADER } from "@/utils/const";
 
 const bankTransfers = [
     { id: "bca", name: "Bank transfer BCA", image: "/bca.svg" },
@@ -27,8 +29,88 @@ const bankTransfers = [
     { id: "cimb", name: "Bank transfer CIMB", image: "/cimb.svg" },
 ];
 
-export default function CheckoutForm() {
+export default function CheckoutForm({ reminder }) {
     const [selectedBank, setSelectedBank] = useState(bankTransfers[0]);
+    const [contactName, setContactName] = useState(
+        reminder?.contact.contact_name || ""
+    );
+    const [address, setAddress] = useState(
+        reminder?.customer.business_address || ""
+    );
+    const [phone, setPhone] = useState(reminder?.contact.phone || "");
+    const [email, setEmail] = useState(reminder?.contact.email || "");
+    const [submitLoading, setSubmitLoading] = useState(false);
+
+    function handleChange(event) {
+        const { value, name } = event.target;
+
+        switch (name) {
+            case "name":
+                setContactName(value);
+                break;
+            case "address":
+                setAddress(value);
+                break;
+            case "email":
+                setEmail(value);
+                break;
+            default:
+                breakl;
+        }
+    }
+
+    async function handleSubmit(event) {
+        event.preventDefault();
+        if (!contactName) {
+            toast.error("Name cannot be empty");
+            return;
+        }
+        if (!address) {
+            toast.error("Address cannot be empty");
+            return;
+        }
+        if (!phone || phone.length <= 2) {
+            toast.error("Phone cannot be empty");
+            return;
+        }
+        if (!email) {
+            toast.error("Email cannot be empty");
+            return;
+        }
+        setSubmitLoading(true);
+
+        try {
+            await fetch(`api/createReminderPayment`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    [X_API_HEADER]: process.env.NEXT_PUBLIC_HEADER_VALUE,
+                },
+                body: JSON.stringify({
+                    invoicesList: reminder.invoice_details.map(
+                        (invoice) => invoice.invoice_id
+                    ),
+                    selectedBank: selectedBank.id,
+                    customerData: {
+                        name: contactName,
+                        city: address,
+                        phone,
+                        email,
+                    },
+                }),
+            })
+                .then((res) => res.json())
+                .then((res) => {
+                    console.log("====================================");
+                    console.log(res);
+                    console.log("====================================");
+                });
+        } catch (err) {
+            console.log(err);
+            toast.error(INTERNAL_SERVER_ERROR);
+        }
+        setSubmitLoading(false);
+    }
 
     return (
         <form className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
@@ -49,21 +131,25 @@ export default function CheckoutForm() {
                             <input
                                 type="text"
                                 name="name"
+                                value={contactName}
+                                onChange={handleChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                             />
                         </div>
                     </div>
                     <div className="mt-4">
                         <label
-                            htmlFor="city"
+                            htmlFor="address"
                             className="block text-sm font-medium text-gray-700"
                         >
-                            City
+                            Address
                         </label>
                         <div className="mt-1">
                             <input
                                 type="text"
-                                name="city"
+                                name="address"
+                                value={address}
+                                onChange={handleChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                             />
                         </div>
@@ -75,7 +161,11 @@ export default function CheckoutForm() {
                         >
                             Phone number
                         </label>
-                        <PhoneNumber className="mt-2 rounded-md shadow-sm" />
+                        <PhoneNumber
+                            className="mt-2 rounded-md shadow-sm"
+                            value={phone}
+                            onChange={(newVal) => setPhone(newVal)}
+                        />
                     </div>
                     <div className="mt-4">
                         <label
@@ -88,8 +178,10 @@ export default function CheckoutForm() {
                             <input
                                 type="email"
                                 id="email-address"
-                                name="email-address"
+                                name="email"
                                 autoComplete="email"
+                                value={email}
+                                onChange={handleChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                             />
                         </div>
@@ -192,7 +284,12 @@ export default function CheckoutForm() {
                 </div>
             </div>
 
-            <OrderSummary />
+            <OrderSummary
+                invoiceDetails={reminder.invoice_details}
+                totalAmount={reminder.total_remaining}
+                submitLoading={submitLoading}
+                onSubmit={handleSubmit}
+            />
         </form>
     );
 }

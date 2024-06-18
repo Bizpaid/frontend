@@ -41,15 +41,15 @@ export default function CheckoutPage() {
         }
     }
 
-    let content = (
-        <div className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
-            <h2 className="sr-only">Checkout</h2>
-            <CheckoutForm />
-        </div>
-    );
+    let content = <Spinner lg />;
 
-    if (loading) {
-        content = <Spinner lg />;
+    if (!loading && reminder) {
+        content = (
+            <div className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
+                <h2 className="sr-only">Checkout</h2>
+                <CheckoutForm reminder={reminder} />
+            </div>
+        );
     }
 
     return <div className="bg-gray-50 overflow-auto h-full">{content}</div>;
