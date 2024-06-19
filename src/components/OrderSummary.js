@@ -1,11 +1,5 @@
 import { Spinner } from "@/common";
-
-function convertCurrency(value) {
-    return value.toLocaleString("in-ID", {
-        style: "currency",
-        currency: "IDR",
-    });
-}
+import { convertCurrency } from "@/utils";
 
 export default function OrderSummary({
     invoiceDetails,

@@ -4,12 +4,23 @@ import { DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 
 import { MobileVaOrderSummary, VaBankInstruction } from "@/components";
+import { convertCurrency } from "@/utils";
 
-export default function VaDetail() {
+function getInvoiceSum(invoices) {
+    return invoices.reduce((acc, curr) => {
+        return acc + curr.amount;
+    }, 0);
+}
+
+export default function VaDetail({ paymentDetail }) {
     function handleCopyVaNumber() {
-        navigator.clipboard.writeText("8930026662350810");
+        navigator.clipboard.writeText(paymentDetail.info.vaNumber);
         toast.success("Copied!");
     }
+
+    console.log("====================================");
+    console.log(paymentDetail);
+    console.log("====================================");
 
     return (
         <div className="flex-1 lg:px-8 xl:px-8 lg:py-8 min-h-screen">
@@ -25,7 +36,7 @@ export default function VaDetail() {
                                 />
                             </div>
                             <h3 className="text-xl md:text-2xl lg:text-3xl text-white lg:text-blue-900 line-clamp-1 ml-2 lg:ml-4">
-                                PT Teman Produk Berkarya
+                                Bizpaid
                             </h3>
                         </div>
                     </div>
@@ -45,7 +56,10 @@ export default function VaDetail() {
                                             </div>
                                             <div className="text-3xl">
                                                 <span className="flex items-center">
-                                                    8930026662350810
+                                                    {
+                                                        paymentDetail.info
+                                                            .vaNumber
+                                                    }
                                                     <span className="pl-2">
                                                         <button
                                                             onClick={
@@ -63,7 +77,7 @@ export default function VaDetail() {
                                                 Virtual Account Name
                                             </div>
                                             <div className="text-3xl">
-                                                PT Teman Produk Berkarya
+                                                {paymentDetail.info.vaName}
                                             </div>
                                         </div>
                                         <div className="space-y-1">
@@ -71,7 +85,12 @@ export default function VaDetail() {
                                                 Amount to Pay
                                             </div>
                                             <div className="text-3xl">
-                                                IDR 4.999.999
+                                                {convertCurrency(
+                                                    getInvoiceSum(
+                                                        paymentDetail.info
+                                                            .paymentItems
+                                                    )
+                                                )}
                                             </div>
                                         </div>
                                     </div>
