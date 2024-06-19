@@ -11,6 +11,7 @@ import {
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { toast } from "react-toastify";
 import cn from "classnames";
+import { useRouter } from "next/navigation";
 
 import { PhoneNumber } from "@/common";
 import { OrderSummary } from "@/components";
@@ -29,7 +30,8 @@ const bankTransfers = [
     { id: "cimb", name: "Bank transfer CIMB", image: "/cimb.svg" },
 ];
 
-export default function CheckoutForm({ reminder }) {
+export default function CheckoutForm({ reminder, invoiceList }) {
+    const router = useRouter();
     const [selectedBank, setSelectedBank] = useState(bankTransfers[0]);
     const [contactName, setContactName] = useState(
         reminder?.contact.contact_name || ""
@@ -80,15 +82,17 @@ export default function CheckoutForm({ reminder }) {
         setSubmitLoading(true);
 
         try {
-            await fetch(`api/createReminderPayment`, {
+            await fetch(`api/createReminderPayment/${reminder.reminder_id}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     [X_API_HEADER]: process.env.NEXT_PUBLIC_HEADER_VALUE,
                 },
                 body: JSON.stringify({
-                    invoicesList: reminder.invoice_details.map(
-                        (invoice) => invoice.invoice_id
+                    invoicesList: invoiceList.filter((invoiceId) =>
+                        reminder.invoice_details.find(
+                            (invoice) => invoice.invoice_id === invoiceId
+                        )
                     ),
                     selectedBank: selectedBank.id,
                     customerData: {
@@ -101,12 +105,12 @@ export default function CheckoutForm({ reminder }) {
             })
                 .then((res) => res.json())
                 .then((res) => {
-                    console.log("====================================");
-                    console.log(res);
-                    console.log("====================================");
+                    const { status, data } = res;
+                    if (status && data) {
+                        router.push(`/va?paymentId=${data.paymentId}`);
+                    }
                 });
         } catch (err) {
-            console.log(err);
             toast.error(INTERNAL_SERVER_ERROR);
         }
         setSubmitLoading(false);

@@ -12,8 +12,11 @@ export default function CheckoutPage() {
     const searchParams = useSearchParams();
     const [loading, setLoading] = useState(true);
     const [reminder, setReminder] = useState(null);
+    const invoiceList = searchParams.get("invoiceList")
+        ? searchParams.get("invoiceList").split(",")
+        : [];
 
-    if (!searchParams.get("rem")) {
+    if (!searchParams.get("reminderId") || !invoiceList.length) {
         notFound();
     }
 
@@ -23,11 +26,14 @@ export default function CheckoutPage() {
 
     async function getReminder() {
         try {
-            await fetch(`api/getReminderDetails/${searchParams.get("rem")}`, {
-                headers: {
-                    [X_API_HEADER]: process.env.NEXT_PUBLIC_HEADER_VALUE,
-                },
-            })
+            await fetch(
+                `api/getReminderDetails/${searchParams.get("reminderId")}`,
+                {
+                    headers: {
+                        [X_API_HEADER]: process.env.NEXT_PUBLIC_HEADER_VALUE,
+                    },
+                }
+            )
                 .then((res) => res.json())
                 .then((res) => {
                     setLoading(false);
@@ -47,7 +53,7 @@ export default function CheckoutPage() {
         content = (
             <div className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
                 <h2 className="sr-only">Checkout</h2>
-                <CheckoutForm reminder={reminder} />
+                <CheckoutForm reminder={reminder} invoiceList={invoiceList} />
             </div>
         );
     }
