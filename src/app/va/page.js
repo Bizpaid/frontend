@@ -49,7 +49,7 @@ export default function VAPage() {
         return (
             <main className="min-h-screen flex items-stretch text-base text-gray-900 bg-white">
                 <VaDetail paymentDetail={paymentDetail} />
-                <VaOrderSummary />
+                <VaOrderSummary paymentDetail={paymentDetail} />
             </main>
         );
     }

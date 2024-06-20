@@ -1,8 +1,11 @@
 "use client";
 
+import moment from "moment-timezone";
 import { ShoppingCartIcon } from "@heroicons/react/24/outline";
 
-export default function MobileVaOrderSummary() {
+import { convertCurrency, getInvoiceSum } from "@/utils";
+
+export default function MobileVaOrderSummary({ paymentDetail }) {
     return (
         <div className="lg:hidden">
             <div className="relative" data-test-id="order-summary-section">
@@ -24,23 +27,6 @@ export default function MobileVaOrderSummary() {
                         <div className="px-4 lg:px-0 py-2">
                             <ul className="flex flex-col space-y-4 py-2">
                                 <li>
-                                    <div data-testid="description">
-                                        <div className="mb-1 flex items-center">
-                                            <h3 className="text-lg font-semibold">
-                                                Description
-                                            </h3>
-                                        </div>
-                                        <p className="lg:pl-6 line-clamp-1 lg:hidden">
-                                            <strong data-testid="external-id">
-                                                Invoice #:
-                                            </strong>{" "}
-                                            temanproduk-xen-1232
-                                        </p>
-                                        <p className="lg:pl-6">
-                                            Payment for Order #1232 at Teman
-                                            Produk
-                                        </p>
-                                    </div>
                                     <div className="mb-1 flex items-center">
                                         <h3
                                             className="text-lg"
@@ -48,7 +34,12 @@ export default function MobileVaOrderSummary() {
                                         >
                                             Pay before{" "}
                                             <strong>
-                                                June 11, 2024 at 5:54 PM
+                                                {moment(
+                                                    paymentDetail.info
+                                                        .paymentExpiry * 1000
+                                                ).format(
+                                                    "MMMM DD, YYYY [at] h:mma"
+                                                )}
                                             </strong>
                                         </h3>
                                     </div>
@@ -61,26 +52,28 @@ export default function MobileVaOrderSummary() {
                         <div className="px-4 lg:px-0 py-4">
                             <table className="w-full">
                                 <tbody>
-                                    <tr data-testid="order-item-summary-0">
-                                        <td
-                                            className="py-3 pr-4 w-full"
-                                            valign="top"
-                                        >
-                                            <div className="font-semibold mb-1">
-                                                Konsultasi Private: Membangun
-                                                Apps &amp; Chatbot Whatsapp
-                                                Berbasis AI Tanpa Koding dengan
-                                                Platform No-Code
-                                            </div>
-                                            <div>1 × IDR 4.999.999</div>
-                                        </td>
-                                        <td
-                                            className="py-3 text-right font-semibold whitespace-nowrap"
-                                            valign="top"
-                                        >
-                                            IDR 4.999.999
-                                        </td>
-                                    </tr>
+                                    {paymentDetail.info.paymentItems.map(
+                                        (payment) => (
+                                            <tr key={payment.invoiceId}>
+                                                <td
+                                                    className="py-3 pr-4 w-full"
+                                                    valign="top"
+                                                >
+                                                    <div className="font-semibold mb-1">
+                                                        {payment.title}
+                                                    </div>
+                                                </td>
+                                                <td
+                                                    className="py-3 text-right font-semibold whitespace-nowrap"
+                                                    valign="top"
+                                                >
+                                                    {convertCurrency(
+                                                        payment.amount
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        )
+                                    )}
                                     <tr>
                                         <td colSpan="2" className="py-4">
                                             <hr className="border-gray-500 opacity-20" />
@@ -91,7 +84,12 @@ export default function MobileVaOrderSummary() {
                                             Subtotal
                                         </td>
                                         <td className="text-right font-semibold py-3 whitespace-nowrap">
-                                            IDR 4.999.999
+                                            {convertCurrency(
+                                                getInvoiceSum(
+                                                    paymentDetail.info
+                                                        .paymentItems
+                                                )
+                                            )}
                                         </td>
                                     </tr>
                                     <tr className="hidden lg:table-row">
@@ -113,7 +111,12 @@ export default function MobileVaOrderSummary() {
                                                     Total
                                                 </div>
                                                 <div className="text-right text-xl lg:text-2xl font-semibold">
-                                                    IDR 4.999.999
+                                                    {convertCurrency(
+                                                        getInvoiceSum(
+                                                            paymentDetail.info
+                                                                .paymentItems
+                                                        )
+                                                    )}
                                                 </div>
                                             </div>
                                         </td>

@@ -4,3 +4,9 @@ export function convertCurrency(value) {
         currency: "IDR",
     });
 }
+
+export function getInvoiceSum(invoices) {
+    return invoices.reduce((acc, curr) => {
+        return acc + curr.amount;
+    }, 0);
+}

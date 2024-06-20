@@ -4,23 +4,13 @@ import { DocumentDuplicateIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 
 import { MobileVaOrderSummary, VaBankInstruction } from "@/components";
-import { convertCurrency } from "@/utils";
-
-function getInvoiceSum(invoices) {
-    return invoices.reduce((acc, curr) => {
-        return acc + curr.amount;
-    }, 0);
-}
+import { convertCurrency, getInvoiceSum } from "@/utils";
 
 export default function VaDetail({ paymentDetail }) {
     function handleCopyVaNumber() {
         navigator.clipboard.writeText(paymentDetail.info.vaNumber);
         toast.success("Copied!");
     }
-
-    console.log("====================================");
-    console.log(paymentDetail);
-    console.log("====================================");
 
     return (
         <div className="flex-1 lg:px-8 xl:px-8 lg:py-8 min-h-screen">
@@ -42,7 +32,7 @@ export default function VaDetail({ paymentDetail }) {
                     </div>
                 </header>
 
-                <MobileVaOrderSummary />
+                <MobileVaOrderSummary paymentDetail={paymentDetail} />
 
                 <div className="flex-1 pb-0">
                     <div>

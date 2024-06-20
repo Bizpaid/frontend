@@ -1,6 +1,9 @@
-import { DocumentTextIcon, ClockIcon } from "@heroicons/react/24/outline";
+import moment from "moment-timezone";
+import { ClockIcon } from "@heroicons/react/24/outline";
 
-export default function VaOrderSummary() {
+import { convertCurrency, getInvoiceSum } from "@/utils";
+
+export default function VaOrderSummary({ paymentDetail }) {
     return (
         <aside className="hidden lg:flex flex-col w-2/5 xl:w-1/3 bg-gray-100 px-4 xl:px-8 py-8">
             <div className="w-full mx-auto max-w-sm">
@@ -9,14 +12,14 @@ export default function VaOrderSummary() {
                         <h2 className="text-3xl font-semibold mb-1 pt-3">
                             Order Summary
                         </h2>
-                        <p className="line-clamp-1">
+                        {/* <p className="line-clamp-1">
                             <strong className="mr-1">Invoice #:</strong>
                             temanproduk-xen-1235
-                        </p>
+                        </p> */}
                     </div>
                     <div className="px-4 lg:px-0 py-2">
                         <ul className="flex flex-col space-y-4 py-2">
-                            <li>
+                            {/* <li>
                                 <div className="mb-1 flex items-center">
                                     <div className="w-6 h-4 hidden lg:block">
                                         <DocumentTextIcon className="w-4 h-4" />
@@ -28,7 +31,7 @@ export default function VaOrderSummary() {
                                 <p className="lg:pl-6">
                                     Payment for Order #1237 at Teman Produk
                                 </p>
-                            </li>
+                            </li> */}
                             <li>
                                 <div className="mb-1 flex items-center">
                                     <div className="hidden lg:block w-6 h-4">
@@ -37,7 +40,12 @@ export default function VaOrderSummary() {
                                     <h3 className="text-lg">
                                         Pay before
                                         <strong className="ml-1">
-                                            June 12, 2024 at 6:11 PM
+                                            {moment(
+                                                paymentDetail.info
+                                                    .paymentExpiry * 1000
+                                            ).format(
+                                                "MMMM DD, YYYY [at] h:mma"
+                                            )}
                                         </strong>
                                     </h3>
                                 </div>
@@ -50,19 +58,22 @@ export default function VaOrderSummary() {
                     <div className="px-4 lg:px-0 py-4">
                         <table className="w-full">
                             <tbody>
-                                <tr>
-                                    <td className="py-3 pr-4 w-full">
-                                        <div className="font-semibold mb-1">
-                                            Konsultasi Private: Membangun Apps &
-                                            Chatbot Whatsapp Berbasis AI Tanpa
-                                            Koding dengan Platform No-Code
-                                        </div>
-                                        <p>1 × IDR 4.999.999</p>
-                                    </td>
-                                    <td className="py-3 text-right font-semibold whitespace-nowrap align-text-top">
-                                        IDR 4.999.999
-                                    </td>
-                                </tr>
+                                {paymentDetail.info.paymentItems.map(
+                                    (payment) => (
+                                        <tr key={payment.invoiceId}>
+                                            <td className="py-3 pr-4 w-full">
+                                                <div className="font-semibold mb-1">
+                                                    {payment.title}
+                                                </div>
+                                            </td>
+                                            <td className="py-3 text-right font-semibold whitespace-nowrap align-text-top">
+                                                {convertCurrency(
+                                                    payment.amount
+                                                )}
+                                            </td>
+                                        </tr>
+                                    )
+                                )}
                                 <tr>
                                     <td colSpan="2" className="py-4">
                                         <hr className="border-gray-500 opacity-20" />
@@ -73,7 +84,11 @@ export default function VaOrderSummary() {
                                         Subtotal
                                     </td>
                                     <td className="text-right font-semibold py-3 whitespace-nowrap">
-                                        IDR 4.999.999
+                                        {convertCurrency(
+                                            getInvoiceSum(
+                                                paymentDetail.info.paymentItems
+                                            )
+                                        )}
                                     </td>
                                 </tr>
                                 <tr className="hidden lg:table-row">
@@ -95,7 +110,12 @@ export default function VaOrderSummary() {
                                                 Total
                                             </div>
                                             <div className="text-right text-xl lg:text-2xl font-semibold">
-                                                IDR 4.999.999
+                                                {convertCurrency(
+                                                    getInvoiceSum(
+                                                        paymentDetail.info
+                                                            .paymentItems
+                                                    )
+                                                )}
                                             </div>
                                         </div>
                                     </td>
